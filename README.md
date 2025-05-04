@@ -202,3 +202,7 @@ Deploying to production in this scenario would be very similar to deploying to a
 
 Alternatively, if we are confident in the quality of our processes and our testing and monitoring systems, we may chose to deploy every merge to main to our production environment.
 
+In all cases, Kubernetes health checks give us additional confidence that certain classes of failure will halt the rollout process.
+
+As we mature, we can investigate performing "canary" deployments with tooling like Istio and Flagger, which allow a gradual rollout of new versions with checks in place around key metrics, like error rates and response times, and automatic rollback in the event of detected issues. Though this is subject to compatibility in our application, for example database migrations would be need be backward compatible to the previous version to safely allow rollbacks.
+
