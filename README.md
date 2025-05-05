@@ -125,9 +125,11 @@ Deployed to the Kubernetes cluster are:
 
 I've not provided code for all of the above, and have chosen to use Terraform to deploy these tools with Helm charts. An alternative would be to utilise a GitOps approach with ArgoCD or Flux.
 
+As part of the `prodcluster` Terraform I also create the `prodfred` namespace for our app - we'll keep all of our fred-related resources in a single namespace, our *fred* Terraform user/job will only need privileges for this namespace.
+
+
 ##### Fred
 I have captured the resources for *fred* together in a Helm chart, which will be applied to the cluster with Terraform. It is composed of the following resources:
-* `fred` namespace - we'll keep all of our fred-related resources in a single namespace, our Terraform user/job will only need privileges for this namespace (once created by a higher privileged user)
 * `frontend` service - corresponding to pods running our frontend Django app
 * `frontend` ingress - for exposing our frontend service to the public internet
 * `frontend` deployment - defining our frontend pods, and allowing for rolling upgrades
@@ -155,6 +157,7 @@ We can use these metrics for a variety of purposes:
 I would also recommend an external service to provide a basic availability check for our system, so we're not solely reliant on a component within the infrastructure to alert us to catastrophic issues.
 
 Finally, a service like [Sentry](https://sentry.io/welcome/) could be used, either as an external provider or self-hosted, and integrated into our application to give greater insight into performance, and more detailed debug information in the event of exceptions in the code.
+
 #### CI
 Before *fred* even touches our Git remote, developers should be able to easily write and execute unit tests on their own machines.
 
@@ -178,7 +181,6 @@ Executing our end-to-end tests in CI could be performed in a few ways.
 * For a closer-to-production test, we might provision a short-lived Kubernetes namespace and deploy the pull request to it, run our tests against it, and then remove the namespace and resources within it.
 
 #### Deployment
-
 Once merged, the next step depends on our organisational needs. We might prefer to create versioned releases on a certain cadence, or according to milestones, and our Git branching and tagging strategy will reflect this.
 
 In that case, we might also chose to maintain live environments of our latest main branch and/or pre-release branches for additional validation. For that we could run a post-merge CI pipeline in those branches to again perform our tests and then this time to deploy to the relevant environment.

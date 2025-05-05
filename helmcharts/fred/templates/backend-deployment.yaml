@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fred-backend
+spec:
+  selector:
+    matchLabels:
+      app: fred
+      component: backend
+  replicas: {{ .Values.backend.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: fred
+        component: backend
+    spec:
+      containers:
+        - name: backend
+          image: backend:{{ .Values.backend.imageTag }}
+          resources:
+            requests:
+              cpu: "1"
+              memory: 4096Mi
+          ports:
+            - containerPort: 8000
+              name: http
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /healthcheck
